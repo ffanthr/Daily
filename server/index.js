@@ -9,6 +9,33 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Auto-initialize Database Table
+const initDB = async () => {
+    try {
+        const schema = `
+        CREATE TABLE IF NOT EXISTS Tasks (
+            ID INT AUTO_INCREMENT PRIMARY KEY,
+            TaskName VARCHAR(255) NOT NULL,
+            Type VARCHAR(50), 
+            Status VARCHAR(50) DEFAULT 'Planned', 
+            StartDate DATETIME,
+            Deadline DATETIME,
+            EstTime DECIMAL(10, 2), 
+            ActTime DECIMAL(10, 2), 
+            Priority VARCHAR(20), 
+            Tags TEXT, 
+            Description TEXT,
+            CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );`;
+        await pool.query(schema);
+        console.log('Database Table Initialized');
+    } catch (err) {
+        console.error('Database Initialization Failed:', err.message);
+    }
+};
+
+initDB();
+
 // Get all tasks
 app.get('/api/tasks', async (req, res) => {
     try {
